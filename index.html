@@ -3,775 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Badge Spoofer | Skid by Yusei</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Discord Badge Spoofer | Vercel</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #06070a;
-            --bg-panel: rgba(18, 20, 32, 0.65);
-            --border-panel: rgba(255, 255, 255, 0.08);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --primary: #8b5cf6;
-            --primary-hover: #7c3aed;
-            --primary-glow: rgba(139, 92, 246, 0.4);
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --font-sans: 'Inter', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            --smooth: cubic-bezier(0.16, 1, 0.3, 1); 
+            --bg-base: #06070a; --bg-panel: rgba(18, 20, 32, 0.65); --border-panel: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc; --text-dim: #94a3b8; --primary: #8b5cf6; --primary-hover: #7c3aed;
+            --primary-glow: rgba(139, 92, 246, 0.4); --danger: #ef4444; --success: #10b981;
+            --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: var(--font-sans);
-            min-height: 100vh;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Background Grid & Blobs */
-        .bg-grid {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-            background-size: 30px 30px; z-index: -2;
-        }
-        .bg-glow {
-            position: fixed; width: 50vw; height: 50vw; border-radius: 50%;
-            filter: blur(100px); z-index: -1; opacity: 0.3;
-            animation: float 15s infinite alternate ease-in-out;
-        }
-        .blob-1 { background: var(--primary); top: -10%; left: -10%; }
-        .blob-2 { background: #0ea5e9; bottom: -10%; right: -10%; animation-delay: -5s; }
-        
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(5%, 5%) scale(1.1); }
-        }
-
-        /* Layout */
-        .app-container {
-            display: flex; width: 95vw; max-width: 1350px; height: 90vh;
-            background: var(--bg-panel); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--border-panel); border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.1);
-            overflow: hidden; animation: appFadeIn 0.8s var(--smooth);
-            position: relative; z-index: 1;
-        }
-
-        @keyframes appFadeIn {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 320px; background: rgba(10, 11, 16, 0.5);
-            border-right: 1px solid var(--border-panel); padding: 28px 24px;
-            display: flex; flex-direction: column; gap: 24px;
-        }
-
-        .brand {
-            display: flex; align-items: center; gap: 14px;
-            padding-bottom: 20px; border-bottom: 1px solid var(--border-panel);
-        }
-        .brand-icon {
-            display: flex; align-items: center; justify-content: center;
-            width: 46px; height: 46px; background: rgba(139, 92, 246, 0.15);
-            border-radius: 14px; border: 1px solid rgba(139, 92, 246, 0.3);
-            color: var(--primary); box-shadow: 0 0 20px var(--primary-glow);
-            transition: all 0.4s var(--smooth);
-        }
-        .brand:hover .brand-icon { transform: rotate(10deg) scale(1.1); box-shadow: 0 0 30px var(--primary-glow); }
-        .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
-        .brand-name {
-            font-size: 1.5rem; font-weight: 800; letter-spacing: 2px;
-            background: linear-gradient(90deg, #fff, #a78bfa);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .brand-author { font-size: 0.75rem; color: var(--primary); font-weight: 600; letter-spacing: 1px; }
-
-        .status-card {
-            display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.3);
-            border: 1px solid var(--border-panel); border-radius: 12px; padding: 14px 16px;
-            font-size: 0.9rem; font-weight: 500; transition: all 0.3s var(--smooth);
-        }
-        .status-card:hover { background: rgba(0,0,0,0.5); border-color: rgba(255,255,255,0.15); }
-        .status-dot {
-            width: 10px; height: 10px; border-radius: 50%; background: var(--text-dim);
-            transition: all 0.3s ease;
-        }
-        .status-dot.online { background: var(--success); box-shadow: 0 0 12px var(--success); }
-        .status-dot.running { background: var(--primary); box-shadow: 0 0 12px var(--primary); animation: pulse 1.5s infinite; }
-        .status-dot.error { background: var(--danger); box-shadow: 0 0 12px var(--danger); }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.6; }
-            100% { transform: scale(0.95); opacity: 1; }
-        }
-
-        .user-info {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--border-panel);
-            border-radius: 14px; padding: 16px; font-size: 0.85rem;
-            display: flex; flex-direction: column; gap: 10px; transition: all 0.3s var(--smooth);
-        }
-        .user-info:hover { background: rgba(255,255,255,0.04); }
-        .info-row { display: flex; justify-content: space-between; align-items: center; }
-        .info-row .label { color: var(--text-dim); }
-        .info-row .value { font-family: var(--font-mono); color: var(--primary); font-weight: 600; }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-base); color: var(--text-main); font-family: var(--font-sans); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .bg-grid { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 30px 30px; z-index: -2; }
+        .bg-glow { position: fixed; width: 50vw; height: 50vw; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.3; }
+        .blob-1 { background: var(--primary); top: -10%; left: -10%; } .blob-2 { background: #0ea5e9; bottom: -10%; right: -10%; }
+        .app-container { display: flex; width: 95vw; max-width: 1350px; height: 90vh; background: var(--bg-panel); backdrop-filter: blur(24px); border: 1px solid var(--border-panel); border-radius: 24px; overflow: hidden; }
+        .sidebar { width: 320px; background: rgba(10, 11, 16, 0.5); border-right: 1px solid var(--border-panel); padding: 28px 24px; display: flex; flex-direction: column; gap: 24px; }
+        .brand { display: flex; align-items: center; gap: 14px; padding-bottom: 20px; border-bottom: 1px solid var(--border-panel); }
+        .brand-icon { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; background: rgba(139, 92, 246, 0.15); border-radius: 14px; color: var(--primary); }
+        .brand-name { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; background: linear-gradient(90deg, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand-author { font-size: 0.75rem; color: var(--primary); font-weight: 600; }
+        .status-card { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-panel); border-radius: 12px; padding: 14px 16px; font-size: 0.9rem; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); }
+        .status-dot.running { background: var(--primary); animation: pulse 1.5s infinite; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .stat-card {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--border-panel);
-            border-radius: 14px; padding: 16px; text-align: center;
-            transition: all 0.3s var(--smooth); cursor: default;
-        }
-        .stat-card:hover { transform: translateY(-3px) scale(1.02); border-color: rgba(255,255,255,0.15); box-shadow: 0 10px 20px -10px rgba(0,0,0,0.5); }
+        .stat-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-panel); border-radius: 14px; padding: 16px; text-align: center; }
         .stat-card.full { grid-column: span 2; }
         .stat-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
-        .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-
-        .progress-container { display: none; opacity: 0; transition: opacity 0.4s var(--smooth); }
-        .progress-container.active { display: block; opacity: 1; }
-        .progress-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px; }
-        .progress-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
-        .progress-fill {
-            height: 100%; background: linear-gradient(90deg, var(--primary), #0ea5e9);
-            width: 0%; transition: width 0.6s var(--smooth); box-shadow: 0 0 10px var(--primary);
-        }
-
-        /* Main Content */
-        .main-content { flex: 1; padding: 28px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; }
-        .top-bar h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
+        .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; }
+        .main-content { flex: 1; padding: 28px; display: flex; flex-direction: column; gap: 24px; }
+        .top-bar h1 { font-size: 1.6rem; font-weight: 700; }
         .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-
-        .glass-panel {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--border-panel);
-            border-radius: 18px; padding: 24px;
-            transition: all 0.4s var(--smooth);
-        }
-        .glass-panel:hover {
-            border-color: rgba(139, 92, 246, 0.3);
-            box-shadow: 0 10px 30px -15px rgba(0,0,0,0.5), 0 0 20px rgba(139, 92, 246, 0.05);
-            transform: translateY(-2px);
-        }
-        .glass-panel h3 { font-size: 1.05rem; margin-bottom: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
-
+        .glass-panel { background: rgba(255,255,255,0.02); border: 1px solid var(--border-panel); border-radius: 18px; padding: 24px; }
+        .glass-panel h3 { font-size: 1.05rem; margin-bottom: 20px; }
         .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px; font-weight: 500; transition: color 0.3s; }
-        .input-group input {
-            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-panel);
-            border-radius: 10px; padding: 12px 14px; color: var(--text-main);
-            font-family: var(--font-mono); font-size: 0.9rem; outline: none;
-            transition: all 0.3s var(--smooth);
-        }
-        .input-group:hover input:not(:disabled) { border-color: rgba(255,255,255,0.2); }
-        .input-group input:focus {
-            border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-            background: rgba(0,0,0,0.6); transform: scale(1.01);
-        }
-        .input-group input:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .row { display: flex; gap: 16px; }
-        .row > div { flex: 1; }
-
-        .mode-selector {
-            display: flex; background: rgba(0,0,0,0.4); border-radius: 10px;
-            padding: 4px; border: 1px solid var(--border-panel);
-            transition: all 0.3s var(--smooth);
-        }
-        .mode-selector:hover { border-color: rgba(255,255,255,0.15); }
-        .mode-btn {
-            flex: 1; background: transparent; border: none; color: var(--text-dim);
-            padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem;
-            font-weight: 600; font-family: var(--font-sans); transition: all 0.3s var(--smooth);
-        }
-        .mode-btn:hover:not(.active):not(:disabled) { color: var(--text-main); background: rgba(255,255,255,0.05); }
-        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 15px var(--primary-glow); transform: scale(1.02); }
-        .mode-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 12px 20px; border-radius: 10px; border: none;
-            font-size: 0.95rem; font-weight: 600; cursor: pointer;
-            transition: all 0.3s var(--smooth); font-family: var(--font-sans);
-            user-select: none; position: relative; overflow: hidden;
-        }
-        .btn:active:not(:disabled) { transform: scale(0.96); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
-        .btn-primary:hover:not(:disabled) { background: var(--primary-hover); box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6); transform: translateY(-2px); }
-
-        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); }
-        .btn-danger:hover:not(:disabled) { background: var(--danger); color: white; box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4); transform: translateY(-2px); }
-
-        .btn-outline { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-panel); }
-        .btn-outline:hover:not(:disabled) { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); transform: translateY(-1px); }
-        
-        .btn-guide { background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.3); }
-        .btn-guide:hover:not(:disabled) { background: rgba(14, 165, 233, 0.25); border-color: #38bdf8; transform: translateY(-1px); box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2); }
-
-        .btn-block { width: 100%; margin-top: 8px; padding: 14px; font-size: 1rem; }
-        .hidden { display: none !important; }
-
-        /* Loading Spinner */
-        .spinner {
-            width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white; border-radius: 50%;
-            animation: spin 0.8s linear infinite; display: none;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading .spinner { display: block; }
-        .loading svg { display: none; }
-        .btn-stop-loading .spinner { display: inline-block; border-top-color: var(--danger); border-color: rgba(239,68,68,0.2); border-top-color: var(--danger); }
-
-        /* Console */
-        .console-panel {
-            flex: 1; background: #000000; border-radius: 16px; border: 1px solid var(--border-panel);
-            display: flex; flex-direction: column; overflow: hidden; min-height: 250px;
-            box-shadow: inset 0 4px 20px rgba(0,0,0,0.5); transition: all 0.3s var(--smooth);
-        }
-        .console-panel:hover { border-color: rgba(255,255,255,0.15); }
-        .console-header {
-            background: #0f1115; padding: 12px 16px; display: flex; align-items: center; border-bottom: 1px solid #1f222e;
-        }
-        .dots { display: flex; gap: 6px; margin-right: 16px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
-        .dot.red { background: #ff5f56; } .dot.yellow { background: #ffbd2e; } .dot.green { background: #27c93f; }
-        .console-title { font-size: 0.8rem; color: #64748b; font-family: var(--font-mono); font-weight: 600; }
-
-        .console-body {
-            flex: 1; padding: 16px; overflow-y: auto; font-family: var(--font-mono);
-            font-size: 0.85rem; line-height: 1.6; color: #e2e8f0; display: flex; flex-direction: column; gap: 4px;
-        }
-        
-        .log-entry { display: flex; gap: 8px; animation: slideIn 0.3s var(--smooth); }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-15px); } to { opacity: 1; transform: translateX(0); } }
-        
-        .log-time { color: #475569; }
-        .log-tag { font-weight: 700; padding: 0 6px; border-radius: 4px; font-size: 0.75rem; background: rgba(255,255,255,0.1); }
-        .log-msg { color: #cbd5e1; flex: 1; word-break: break-word; }
-
-        .log-entry.ok .log-tag { color: var(--success); background: rgba(16, 185, 129, 0.15); }
-        .log-entry.err .log-tag { color: var(--danger); background: rgba(239, 68, 68, 0.15); }
-        .log-entry.warn .log-tag { color: var(--warning); background: rgba(245, 158, 11, 0.15); }
-        .log-entry.sent .log-tag { color: var(--primary); background: rgba(139, 92, 246, 0.15); }
-
-        /* Toast Notifications */
-        #toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; }
-        .toast {
-            background: var(--bg-panel); backdrop-filter: blur(10px);
-            border: 1px solid var(--border-panel); border-left: 4px solid var(--primary);
-            padding: 16px 20px; border-radius: 8px; color: white; font-size: 0.9rem; font-weight: 500;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: toastIn 0.4s var(--smooth);
-            display: flex; align-items: center; gap: 12px;
-        }
-        .toast.error { border-left-color: var(--danger); }
-        .toast.success { border-left-color: var(--success); }
-        @keyframes toastIn { from { opacity: 0; transform: translateX(100px) scale(0.9); } to { opacity: 1; transform: translateX(0) scale(1); } }
-
-        /* Modal Hướng Dẫn */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px);
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.4s var(--smooth); z-index: 1000;
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        
-        .modal-content {
-            background: #11131c; border: 1px solid var(--border-panel);
-            border-radius: 20px; width: 90%; max-width: 800px; max-height: 85vh;
-            display: flex; flex-direction: column;
-            transform: translateY(40px) scale(0.95); transition: all 0.4s var(--smooth);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        }
-        .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
-
-        .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-panel); display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h2 { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
-        .btn-close { background: transparent; border: none; color: var(--text-dim); cursor: pointer; padding: 4px; transition: all 0.2s var(--smooth); }
-        .btn-close:hover { color: white; transform: rotate(90deg) scale(1.1); }
-
-        .modal-body { padding: 24px; overflow-y: auto; font-size: 0.95rem; line-height: 1.6; color: #cbd5e1; }
-        .modal-body h4 { color: white; margin: 20px 0 10px 0; font-size: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
-        .modal-body h4:first-child { margin-top: 0; }
-        .modal-body p { margin-bottom: 12px; }
-        .modal-body ol { margin-left: 20px; margin-bottom: 16px; }
-        .modal-body li { margin-bottom: 8px; }
-        .modal-body code { background: rgba(139, 92, 246, 0.15); color: #a78bfa; padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.85em; }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .input-group label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px; }
+        .input-group input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-panel); border-radius: 10px; padding: 12px 14px; color: var(--text-main); font-family: var(--font-mono); outline: none; }
+        .row { display: flex; gap: 16px; } .row > div { flex: 1; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 10px; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; background: var(--primary); color: white; transition: 0.3s; }
+        .btn:hover { background: var(--primary-hover); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-block { width: 100%; margin-top: 8px; padding: 14px; }
+        .console-panel { flex: 1; background: #000; border-radius: 16px; border: 1px solid var(--border-panel); display: flex; flex-direction: column; min-height: 250px; }
+        .console-header { background: #0f1115; padding: 12px 16px; display: flex; border-bottom: 1px solid #1f222e; }
+        .dots { display: flex; gap: 6px; margin-right: 16px; } .dot { width: 10px; height: 10px; border-radius: 50%; } .dot.red { background: #ff5f56; } .dot.yellow { background: #ffbd2e; } .dot.green { background: #27c93f; }
+        .console-body { flex: 1; padding: 16px; overflow-y: auto; font-family: var(--font-mono); font-size: 0.85rem; color: #e2e8f0; display: flex; flex-direction: column; gap: 4px; }
+        .log-entry { display: flex; gap: 8px; } .log-time { color: #475569; } .log-tag { font-weight: 700; padding: 0 6px; border-radius: 4px; background: rgba(255,255,255,0.1); } .log-msg { flex: 1; }
+        .log-entry.ok .log-tag { color: var(--success); } .log-entry.err .log-tag { color: var(--danger); }
     </style>
 </head>
 <body>
-    <div class="bg-glow blob-1"></div>
-    <div class="bg-glow blob-2"></div>
-    <div class="bg-grid"></div>
-    
-    <div id="toast-container"></div>
-
-    <!-- MODAL HƯỚNG DẪN -->
-    <div class="modal-overlay" id="guide-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>📖 Hướng Dẫn Lấy Dữ Liệu</h2>
-                <button class="btn-close" id="btn-close-modal">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <h4>1. Cách lấy Discord Token (Bắt buộc)</h4>
-                <ol>
-                    <li>Mở <strong>Discord trên trình duyệt web</strong> (Chrome/Edge) và đăng nhập.</li>
-                    <li>Nhấn <code>F12</code> để mở Developer Tools, chuyển sang tab <strong>Network</strong> (Mạng).</li>
-                    <li>Gửi một tin nhắn bất kỳ vào server hoặc DM bạn bè.</li>
-                    <li>Trong danh sách Network, tìm request có tên <code>messages</code> hoặc <code>science</code>.</li>
-                    <li>Bấm vào request đó, nhìn sang bảng bên phải chọn tab <strong>Headers</strong>.</li>
-                    <li>Kéo xuống phần <strong>Request Headers</strong>, tìm dòng <code>authorization</code>. Copy toàn bộ chuỗi ký tự dài ngoằng đó (thường bắt đầu bằng chữ M hoặc N) và dán vào ô Discord Token.</li>
-                </ol>
-
-                <h4>2. Cách lấy Cookie cf_clearance (Bắt buộc)</h4>
-                <ol>
-                    <li>Vẫn ở trang web Discord trên trình duyệt, nhấn <code>F12</code>.</li>
-                    <li>Chuyển sang tab <strong>Application</strong> (Ứng dụng) ở góc trên Developer Tools.</li>
-                    <li>Ở cột bên trái, chọn <strong>Cookies</strong> -> <code>https://discord.com</code>.</li>
-                    <li>Tìm dòng có tên là <code>cf_clearance</code>.</li>
-                    <li>Copy phần <strong>Value</strong> (giá trị) của nó và dán vào ô cf_clearance Cookie.</li>
-                </ol>
-
-                <h4>3. Cách lấy Fingerprint (Tùy chọn)</h4>
-                <p>Công cụ đã tích hợp sẵn script tạo Fingerprint tự động. Nếu He muốn tự làm thủ công, hãy xem file <code>spoofer.py</code> (hàm <code>generate_fingerprint</code>), copy đoạn script PowerShell và chạy trên máy Windows của bạn. Tuy nhiên, thông thường He chỉ cần bỏ trống ô này, tool sẽ tự động xử lý.</p>
-
-                <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--danger); padding: 12px; border-radius: 4px; margin-top: 20px;">
-                    <strong>⚠️ Lưu ý:</strong> Không chia sẻ Token và Cookie cho bất kỳ ai. Mọi thông tin chỉ được lưu cục bộ trên máy của bạn.
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <div class="bg-glow blob-1"></div><div class="bg-glow blob-2"></div><div class="bg-grid"></div>
     <div class="app-container">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="brand">
-                <div class="brand-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                </div>
-                <div class="brand-text">
-                    <span class="brand-name">SKID</span>
-                    <span class="brand-author">by Yusei</span>
-                </div>
+                <div class="brand-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+                <div class="brand-text"><span class="brand-name">SKID</span><span class="brand-author">by Yusei</span></div>
             </div>
-
-            <div class="status-card">
-                <div class="status-dot" id="status-dot"></div>
-                <div id="status-text">Đang kết nối...</div>
-            </div>
-
-            <div class="user-info">
-                <div class="info-row">
-                    <span class="label">User ID</span>
-                    <span class="value" id="user-id">None</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Token</span>
-                    <span class="value" id="token-masked">None</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Cookie</span>
-                    <span class="value" id="cookie-masked">None</span>
-                </div>
-            </div>
-
+            <div class="status-card"><div class="status-dot" id="status-dot"></div><div id="status-text">Vercel Ready</div></div>
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="games-claimed">0</div>
-                    <div class="stat-label">Games</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="hours-claimed">0h</div>
-                    <div class="stat-label">Hours</div>
-                </div>
-                <div class="stat-card full">
-                    <div class="stat-value" id="games-loaded">0</div>
-                    <div class="stat-label">Games Available</div>
-                </div>
-            </div>
-
-            <div class="progress-container" id="progress-section">
-                <div class="progress-header">
-                    <span>Tiến trình</span>
-                    <span id="progress-text">0 / 0</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
-                </div>
+                <div class="stat-card"><div class="stat-value" id="games-claimed">0</div><div class="stat-label">Games</div></div>
+                <div class="stat-card"><div class="stat-value" id="hours-claimed">0h</div><div class="stat-label">Hours</div></div>
             </div>
         </aside>
-
-        <!-- Main Content -->
         <main class="main-content">
-            <header class="top-bar">
-                <h1>Discord Badge Spoofer</h1>
-                <div style="display: flex; gap: 12px;">
-                    <button class="btn btn-guide" id="btn-guide">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                        Hướng dẫn
-                    </button>
-                    <button class="btn btn-outline" id="btn-clear-logs">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-                        Xoá Log
-                    </button>
-                    <button class="btn btn-outline" id="btn-refresh-auth">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-                        Refresh
-                    </button>
-                </div>
-            </header>
-
+            <header class="top-bar"><h1>Discord Badge Spoofer (Vercel)</h1></header>
             <div class="config-grid">
-                <!-- Auth Inputs -->
                 <div class="glass-panel">
                     <h3>Thông tin xác thực</h3>
-                    <div class="input-group">
-                        <label>Discord Token</label>
-                        <input type="password" id="input-token" placeholder="Nhập token..." autocomplete="off">
-                    </div>
-                    <div class="input-group">
-                        <label>cf_clearance Cookie</label>
-                        <input type="password" id="input-cookie" placeholder="Nhập cookie..." autocomplete="off">
-                    </div>
-                    <div class="input-group">
-                        <label>Fingerprint (Tuỳ chọn)</label>
-                        <input type="text" id="input-fingerprint" placeholder="Nhập fingerprint..." autocomplete="off">
-                    </div>
+                    <div class="input-group"><label>Discord Token</label><input type="password" id="input-token" placeholder="Nhập token..."></div>
+                    <div class="input-group"><label>cf_clearance Cookie</label><input type="password" id="input-cookie" placeholder="Nhập cookie..."></div>
                 </div>
-
-                <!-- Settings -->
                 <div class="glass-panel">
                     <h3>Tuỳ chỉnh</h3>
-                    <div class="input-group">
-                        <label>Chế độ chạy</label>
-                        <div class="mode-selector">
-                            <button class="mode-btn active" data-mode="both">Cả hai</button>
-                            <button class="mode-btn" data-mode="playtime">Playtime</button>
-                            <button class="mode-btn" data-mode="games_played">Games Played</button>
-                        </div>
-                    </div>
                     <div class="row">
-                        <div class="input-group">
-                            <label>Số Game (trống = tất cả)</label>
-                            <input type="number" id="input-count" placeholder="All" min="1">
-                        </div>
-                        <div class="input-group">
-                            <label>Số giờ / Game</label>
-                            <input type="number" id="input-hours" value="10" step="0.5" min="0.1">
-                        </div>
+                        <div class="input-group"><label>Số Game (Max 50)</label><input type="number" id="input-count" value="50" max="50"></div>
+                        <div class="input-group"><label>Số giờ / Game</label><input type="number" id="input-hours" value="10"></div>
                     </div>
-                    <button class="btn btn-primary btn-block" id="btn-start">
-                        <span class="spinner"></span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                        Bắt đầu Spoofing
-                    </button>
-                    <button class="btn btn-danger btn-block hidden" id="btn-stop">
-                        <span class="spinner"></span>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
-                        Dừng lại
-                    </button>
+                    <button class="btn btn-block" id="btn-start">Bắt đầu Spoofing</button>
                 </div>
             </div>
-
-            <!-- Console -->
             <div class="console-panel">
-                <div class="console-header">
-                    <div class="dots">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                    </div>
-                    <span class="console-title">Terminal Output</span>
-                </div>
+                <div class="console-header"><div class="dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div></div>
                 <div class="console-body" id="console-output"></div>
             </div>
         </main>
     </div>
-
     <script>
-        const clientId = sessionStorage.getItem('clientId') || 'client_' + Math.random().toString(36).substr(2, 9);
-        sessionStorage.setItem('clientId', clientId);
-
-        const el = {
-            statusDot: document.getElementById('status-dot'),
-            statusText: document.getElementById('status-text'),
-            userId: document.getElementById('user-id'),
-            tokenMasked: document.getElementById('token-masked'),
-            cookieMasked: document.getElementById('cookie-masked'),
-            gamesClaimed: document.getElementById('games-claimed'),
-            hoursClaimed: document.getElementById('hours-claimed'),
-            gamesLoaded: document.getElementById('games-loaded'),
-            progressSection: document.getElementById('progress-section'),
-            progressFill: document.getElementById('progress-fill'),
-            progressText: document.getElementById('progress-text'),
-            inputToken: document.getElementById('input-token'),
-            inputCookie: document.getElementById('input-cookie'),
-            inputFingerprint: document.getElementById('input-fingerprint'),
-            inputCount: document.getElementById('input-count'),
-            inputHours: document.getElementById('input-hours'),
-            btnStart: document.getElementById('btn-start'),
-            btnStop: document.getElementById('btn-stop'),
-            btnClearLogs: document.getElementById('btn-clear-logs'),
-            btnRefreshAuth: document.getElementById('btn-refresh-auth'),
-            consoleOutput: document.getElementById('console-output'),
-            modeBtns: document.querySelectorAll('.mode-btn'),
-            guideModal: document.getElementById('guide-modal'),
-            btnGuide: document.getElementById('btn-guide'),
-            btnCloseModal: document.getElementById('btn-close-modal')
-        };
-
-        let currentMode = 'both';
-
-        // Toast System
-        function showToast(msg, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> <span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.style.animation = 'toastIn 0.3s reverse forwards';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Modal Handlers
-        el.btnGuide.addEventListener('click', () => el.guideModal.classList.add('active'));
-        el.btnCloseModal.addEventListener('click', () => el.guideModal.classList.remove('active'));
-        el.guideModal.addEventListener('click', (e) => {
-            if (e.target === el.guideModal) el.guideModal.classList.remove('active');
-        });
-
-        // API call wrapper - Truyền ID qua URL thay vì Body
-        async function apiCall(endpoint, method = 'GET', body = null) {
-            try {
-                const options = { method, headers: { 'Content-Type': 'application/json' } };
-                if (body) options.body = JSON.stringify(body);
-                
-                const res = await fetch(`/api/${endpoint}?clientId=${clientId}`, options);
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || "Lỗi Server");
-                return data;
-            } catch (err) {
-                return { success: false, message: err.message || "Lỗi kết nối máy chủ!" };
-            }
-        }
-
-        function resetStopButton() {
-            el.btnStop.classList.remove('btn-stop-loading');
-            el.btnStop.innerHTML = `<span class="spinner"></span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg> Dừng lại`;
-            el.btnStop.disabled = false;
-        }
-
-        function updateStatusUI(data) {
-            el.statusText.textContent = data.status_text;
-            el.statusDot.className = 'status-dot';
-            
-            if (data.is_running) {
-                el.statusDot.classList.add('running');
-                el.btnStart.classList.add('hidden');
-                el.btnStop.classList.remove('hidden');
-                el.progressSection.classList.add('active');
-                disableInputs(true);
-            } else {
-                el.statusDot.classList.add(data.status_text.includes('Error') ? 'error' : 'online');
-                el.btnStart.classList.remove('hidden');
-                el.btnStop.classList.add('hidden');
-                disableInputs(false);
-                
-                resetStopButton();
-
-                if (data.progress.current === data.progress.total && data.progress.total > 0) {
-                    setTimeout(() => el.progressSection.classList.remove('active'), 2000);
-                } else {
-                    el.progressSection.classList.remove('active');
-                }
-            }
-
-            el.userId.textContent = data.user_id || 'None';
-            el.tokenMasked.textContent = data.token_masked || 'None';
-            el.cookieMasked.textContent = data.cookie_masked || 'None';
-            
-            el.gamesClaimed.textContent = data.total_games_claimed.toLocaleString();
-            el.hoursClaimed.textContent = `${data.total_hours_claimed.toLocaleString()}h`;
-            el.gamesLoaded.textContent = data.games_loaded.toLocaleString();
-
-            if (data.progress.total > 0) {
-                const pct = (data.progress.current / data.progress.total) * 100;
-                el.progressFill.style.width = `${pct}%`;
-                el.progressText.textContent = `${data.progress.current} / ${data.progress.total}`;
-            } else {
-                el.progressFill.style.width = '0%';
-                el.progressText.textContent = '0 / 0';
-            }
-        }
-
-        function appendLog(log) {
+        function appendLog(tag, msg, type = 'info') {
             const div = document.createElement('div');
-            div.className = `log-entry ${log.level}`;
-            div.innerHTML = `
-                <span class="log-time">[${log.timestamp}]</span>
-                <span class="log-tag">${log.tag}</span>
-                <span class="log-msg">${log.message}</span>
-            `;
-            el.consoleOutput.appendChild(div);
-            el.consoleOutput.scrollTop = el.consoleOutput.scrollHeight;
+            div.className = `log-entry ${type}`;
+            div.innerHTML = `<span class="log-time">[${new Date().toLocaleTimeString('vi-VN')}]</span><span class="log-tag">${tag}</span><span class="log-msg">${msg}</span>`;
+            document.getElementById('console-output').appendChild(div);
         }
 
-        function disableInputs(disabled) {
-            el.inputToken.disabled = disabled;
-            el.inputCookie.disabled = disabled;
-            el.inputFingerprint.disabled = disabled;
-            el.inputCount.disabled = disabled;
-            el.inputHours.disabled = disabled;
-            el.modeBtns.forEach(btn => btn.disabled = disabled);
-        }
+        document.getElementById('btn-start').addEventListener('click', async function() {
+            const token = document.getElementById('input-token').value.trim();
+            const cookie = document.getElementById('input-cookie').value.trim();
+            if (!token || !cookie) { appendLog('ERROR', 'Vui lòng nhập Token và Cookie!', 'err'); return; }
 
-        // Events
-        el.modeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                el.modeBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentMode = btn.dataset.mode;
-            });
-        });
+            this.disabled = true; this.innerHTML = 'Đang gửi...';
+            document.getElementById('status-dot').classList.add('running');
+            document.getElementById('status-text').textContent = 'Đang xử lý...';
 
-        el.btnStart.addEventListener('click', async () => {
-            const payload = {
-                token: el.inputToken.value.trim(),
-                cookie: el.inputCookie.value.trim(),
-                fingerprint: el.inputFingerprint.value.trim(),
-                count: el.inputCount.value ? parseInt(el.inputCount.value) : null,
-                hours: parseFloat(el.inputHours.value) || 10,
-                mode: currentMode
-            };
-
-            el.btnStart.classList.add('loading');
-            el.btnStart.disabled = true;
-
-            const res = await apiCall('run', 'POST', payload);
-            
-            el.btnStart.classList.remove('loading');
-            el.btnStart.disabled = false;
-
-            if (!res.success) {
-                showToast(res.message, 'error');
-            } else {
-                showToast("Đã bắt đầu tiến trình Spoofing!");
-            }
-        });
-
-        el.btnStop.addEventListener('click', async () => {
-            el.btnStop.disabled = true;
-            el.btnStop.classList.add('btn-stop-loading');
-            el.btnStop.innerHTML = `<span class="spinner"></span> Đang dừng...`;
-            
-            const res = await apiCall('stop', 'POST');
-            
-            if (!res.success) {
-                showToast(res.message, 'error');
-                resetStopButton();
-            } else {
-                showToast("Đã gửi lệnh dừng. Vui lòng chờ batch hiện tại kết thúc.");
-                // Fallback: Tự động nhả nút sau 4s đề phòng mất kết nối SSE
-                setTimeout(() => {
-                    if (el.btnStop.classList.contains('btn-stop-loading')) {
-                        resetStopButton();
-                    }
-                }, 4000);
-            }
-        });
-
-        el.btnClearLogs.addEventListener('click', async () => {
-            await apiCall('logs/clear', 'POST');
-            el.consoleOutput.innerHTML = '';
-            showToast("Đã xoá nhật ký!");
-        });
-
-        el.btnRefreshAuth.addEventListener('click', async () => {
-            const originalHTML = el.btnRefreshAuth.innerHTML;
-            el.btnRefreshAuth.disabled = true;
-            el.btnRefreshAuth.innerHTML = '<span class="spinner" style="display:block; border-top-color:white; width:16px; height:16px;"></span> Đang làm mới...';
-            
-            const payload = { token: el.inputToken.value.trim(), cookie: el.inputCookie.value.trim() };
-            const res = await apiCall('refresh_auth', 'POST', payload);
-            
-            el.btnRefreshAuth.innerHTML = originalHTML;
-            el.btnRefreshAuth.disabled = false;
-            
-            if (!res.success) showToast(res.message, 'error');
-            else showToast("Làm mới Auth thành công!");
-        });
-
-        // SSE Connection & Fallback
-        function connectSSE() {
-            const eventSource = new EventSource(`/api/events?clientId=${clientId}`);
-            
-            eventSource.onmessage = (event) => {
-                const payload = JSON.parse(event.data);
-                
-                if (payload.type === 'init') {
-                    updateStatusUI(payload.status);
-                    el.consoleOutput.innerHTML = '';
-                    payload.logs.forEach(appendLog);
-                } else if (payload.type === 'status') {
-                    updateStatusUI(payload.data);
-                } else if (payload.type === 'log') {
-                    appendLog(payload.data);
-                }
-            };
-
-            eventSource.onerror = () => {
-                el.statusText.textContent = "Mất kết nối Server. Đang thử lại...";
-                el.statusDot.className = 'status-dot error';
-                eventSource.close();
-                setTimeout(connectSSE, 3000);
-            };
-        }
-
-        async function init() {
             try {
-                const res = await fetch(`/api/status?clientId=${clientId}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    updateStatusUI(data);
+                const res = await fetch('/api/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token, cookie,
+                        hours: parseFloat(document.getElementById('input-hours').value) || 10,
+                        count: parseInt(document.getElementById('input-count').value) || 50
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    appendLog('SUCCESS', data.message, 'ok');
+                    document.getElementById('games-claimed').textContent = document.getElementById('input-count').value;
+                    document.getElementById('hours-claimed').textContent = (parseInt(document.getElementById('input-count').value) * parseFloat(document.getElementById('input-hours').value)) + 'h';
+                } else {
+                    appendLog('ERROR', data.message, 'err');
                 }
-            } catch (e) {}
-            connectSSE();
-        }
-
-        init();
+            } catch (e) {
+                appendLog('ERROR', 'Lỗi kết nối Server Vercel!', 'err');
+            } finally {
+                this.disabled = false; this.innerHTML = 'Bắt đầu Spoofing';
+                document.getElementById('status-dot').classList.remove('running');
+                document.getElementById('status-text').textContent = 'Hoàn thành';
+            }
+        });
     </script>
 </body>
 </html>
