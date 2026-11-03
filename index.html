@@ -1,137 +1,52 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Badge Spoofer | Vercel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-base: #06070a; --bg-panel: rgba(18, 20, 32, 0.65); --border-panel: rgba(255, 255, 255, 0.08);
-            --text-main: #f8fafc; --text-dim: #94a3b8; --primary: #8b5cf6; --primary-hover: #7c3aed;
-            --primary-glow: rgba(139, 92, 246, 0.4); --danger: #ef4444; --success: #10b981;
-            --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--bg-base); color: var(--text-main); font-family: var(--font-sans); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .bg-grid { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px); background-size: 30px 30px; z-index: -2; }
-        .bg-glow { position: fixed; width: 50vw; height: 50vw; border-radius: 50%; filter: blur(100px); z-index: -1; opacity: 0.3; }
-        .blob-1 { background: var(--primary); top: -10%; left: -10%; } .blob-2 { background: #0ea5e9; bottom: -10%; right: -10%; }
-        .app-container { display: flex; width: 95vw; max-width: 1350px; height: 90vh; background: var(--bg-panel); backdrop-filter: blur(24px); border: 1px solid var(--border-panel); border-radius: 24px; overflow: hidden; }
-        .sidebar { width: 320px; background: rgba(10, 11, 16, 0.5); border-right: 1px solid var(--border-panel); padding: 28px 24px; display: flex; flex-direction: column; gap: 24px; }
-        .brand { display: flex; align-items: center; gap: 14px; padding-bottom: 20px; border-bottom: 1px solid var(--border-panel); }
-        .brand-icon { display: flex; align-items: center; justify-content: center; width: 46px; height: 46px; background: rgba(139, 92, 246, 0.15); border-radius: 14px; color: var(--primary); }
-        .brand-name { font-size: 1.5rem; font-weight: 800; letter-spacing: 2px; background: linear-gradient(90deg, #fff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .brand-author { font-size: 0.75rem; color: var(--primary); font-weight: 600; }
-        .status-card { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-panel); border-radius: 12px; padding: 14px 16px; font-size: 0.9rem; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); }
-        .status-dot.running { background: var(--primary); animation: pulse 1.5s infinite; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .stat-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border-panel); border-radius: 14px; padding: 16px; text-align: center; }
-        .stat-card.full { grid-column: span 2; }
-        .stat-value { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
-        .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; }
-        .main-content { flex: 1; padding: 28px; display: flex; flex-direction: column; gap: 24px; }
-        .top-bar h1 { font-size: 1.6rem; font-weight: 700; }
-        .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .glass-panel { background: rgba(255,255,255,0.02); border: 1px solid var(--border-panel); border-radius: 18px; padding: 24px; }
-        .glass-panel h3 { font-size: 1.05rem; margin-bottom: 20px; }
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px; }
-        .input-group input { width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-panel); border-radius: 10px; padding: 12px 14px; color: var(--text-main); font-family: var(--font-mono); outline: none; }
-        .row { display: flex; gap: 16px; } .row > div { flex: 1; }
-        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 20px; border-radius: 10px; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; background: var(--primary); color: white; transition: 0.3s; }
-        .btn:hover { background: var(--primary-hover); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-block { width: 100%; margin-top: 8px; padding: 14px; }
-        .console-panel { flex: 1; background: #000; border-radius: 16px; border: 1px solid var(--border-panel); display: flex; flex-direction: column; min-height: 250px; }
-        .console-header { background: #0f1115; padding: 12px 16px; display: flex; border-bottom: 1px solid #1f222e; }
-        .dots { display: flex; gap: 6px; margin-right: 16px; } .dot { width: 10px; height: 10px; border-radius: 50%; } .dot.red { background: #ff5f56; } .dot.yellow { background: #ffbd2e; } .dot.green { background: #27c93f; }
-        .console-body { flex: 1; padding: 16px; overflow-y: auto; font-family: var(--font-mono); font-size: 0.85rem; color: #e2e8f0; display: flex; flex-direction: column; gap: 4px; }
-        .log-entry { display: flex; gap: 8px; } .log-time { color: #475569; } .log-tag { font-weight: 700; padding: 0 6px; border-radius: 4px; background: rgba(255,255,255,0.1); } .log-msg { flex: 1; }
-        .log-entry.ok .log-tag { color: var(--success); } .log-entry.err .log-tag { color: var(--danger); }
-    </style>
-</head>
-<body>
-    <div class="bg-glow blob-1"></div><div class="bg-glow blob-2"></div><div class="bg-grid"></div>
-    <div class="app-container">
-        <aside class="sidebar">
-            <div class="brand">
-                <div class="brand-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
-                <div class="brand-text"><span class="brand-name">SKID</span><span class="brand-author">by Yusei</span></div>
-            </div>
-            <div class="status-card"><div class="status-dot" id="status-dot"></div><div id="status-text">Vercel Ready</div></div>
-            <div class="stats-grid">
-                <div class="stat-card"><div class="stat-value" id="games-claimed">0</div><div class="stat-label">Games</div></div>
-                <div class="stat-card"><div class="stat-value" id="hours-claimed">0h</div><div class="stat-label">Hours</div></div>
-            </div>
-        </aside>
-        <main class="main-content">
-            <header class="top-bar"><h1>Discord Badge Spoofer (Vercel)</h1></header>
-            <div class="config-grid">
-                <div class="glass-panel">
-                    <h3>Thông tin xác thực</h3>
-                    <div class="input-group"><label>Discord Token</label><input type="password" id="input-token" placeholder="Nhập token..."></div>
-                    <div class="input-group"><label>cf_clearance Cookie</label><input type="password" id="input-cookie" placeholder="Nhập cookie..."></div>
-                </div>
-                <div class="glass-panel">
-                    <h3>Tuỳ chỉnh</h3>
-                    <div class="row">
-                        <div class="input-group"><label>Số Game (Max 50)</label><input type="number" id="input-count" value="50" max="50"></div>
-                        <div class="input-group"><label>Số giờ / Game</label><input type="number" id="input-hours" value="10"></div>
-                    </div>
-                    <button class="btn btn-block" id="btn-start">Bắt đầu Spoofing</button>
-                </div>
-            </div>
-            <div class="console-panel">
-                <div class="console-header"><div class="dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div></div>
-                <div class="console-body" id="console-output"></div>
-            </div>
-        </main>
-    </div>
-    <script>
-        function appendLog(tag, msg, type = 'info') {
-            const div = document.createElement('div');
-            div.className = `log-entry ${type}`;
-            div.innerHTML = `<span class="log-time">[${new Date().toLocaleTimeString('vi-VN')}]</span><span class="log-tag">${tag}</span><span class="log-msg">${msg}</span>`;
-            document.getElementById('console-output').appendChild(div);
-        }
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import sys
+import os
 
-        document.getElementById('btn-start').addEventListener('click', async function() {
-            const token = document.getElementById('input-token').value.trim();
-            const cookie = document.getElementById('input-cookie').value.trim();
-            if (!token || !cookie) { appendLog('ERROR', 'Vui lòng nhập Token và Cookie!', 'err'); return; }
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from core_engine import State, Session, ScienceClient, _download_games, _parse_games, select_games
 
-            this.disabled = true; this.innerHTML = 'Đang gửi...';
-            document.getElementById('status-dot').classList.add('running');
-            document.getElementById('status-text').textContent = 'Đang xử lý...';
+app = FastAPI()
 
-            try {
-                const res = await fetch('/api/run', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        token, cookie,
-                        hours: parseFloat(document.getElementById('input-hours').value) || 10,
-                        count: parseInt(document.getElementById('input-count').value) || 50
-                    })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    appendLog('SUCCESS', data.message, 'ok');
-                    document.getElementById('games-claimed').textContent = document.getElementById('input-count').value;
-                    document.getElementById('hours-claimed').textContent = (parseInt(document.getElementById('input-count').value) * parseFloat(document.getElementById('input-hours').value)) + 'h';
-                } else {
-                    appendLog('ERROR', data.message, 'err');
-                }
-            } catch (e) {
-                appendLog('ERROR', 'Lỗi kết nối Server Vercel!', 'err');
-            } finally {
-                this.disabled = false; this.innerHTML = 'Bắt đầu Spoofing';
-                document.getElementById('status-dot').classList.remove('running');
-                document.getElementById('status-text').textContent = 'Hoàn thành';
-            }
-        });
-    </script>
-</body>
-</html>
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+class RunRequest(BaseModel):
+    token: str
+    cookie: str
+    hours: float = 10.0
+    count: int = 50
+
+@app.post("/api/run")
+def run_bot(req: RunRequest):
+    try:
+        state = State()
+        state.token = req.token
+        state.cookie = req.cookie
+        session = Session.new()
+        client = ScienceClient(state, session)
+        
+        try:
+            raw = _download_games()
+            games = _parse_games(raw)
+        except Exception:
+            return {"success": False, "message": "Không thể tải danh sách game"}
+
+        selected = select_games(games, state, req.count)
+        events = []
+        for game in selected:
+            events.extend(client.build_session(game, int(req.hours * 3600 * 1000)))
+            
+        status = client.post(events)
+        
+        if status == 204:
+            return {"success": True, "message": f"Đã gửi thành công {len(selected)} games."}
+        else:
+            return {"success": False, "message": f"Lỗi Discord API: HTTP {status}. Token/Cookie có thể đã hết hạn."}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
