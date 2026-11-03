@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: discordbadge
+    env: python
+    plan: free
+    buildCommand: "echo ready"
+    startCommand: "python server.py"
